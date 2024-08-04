@@ -1,35 +1,77 @@
-.input {
-  display: inline-block;
-  padding: .375rem .75rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: #495057;
-  border: 1px solid #ced4da;
-  border-radius: .25rem;
-  outline: none;
+.body {
+  margin: 0px;
+}
+.container-tickets{
+  margin-left: 0px;
+  width: 50%;
+  box-sizing: border-box; 
+  background-color: rgb(0, 183, 255);
+
 }
 
-.input.valid {
-  border: 1px solid green;
+.add-tickets {
+  margin-left: 500px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  border-radius: 20px;
+  height: 50px;
+  width: 200px;
+  border: 1px solid black;
+}
+.ticket-list{
+  width: 90%;
+  background-color: rgb(255, 0, 102);
+
+  margin-left: 25px;
+  margin-right: auto;
+}
+.ticket {
+  margin-top: 20px;
+  display: flex;
+  box-sizing: border-box;  
+  border: 1px solid black;
+  height: 50px;
+}
+.ticket-name{
+  margin-right: 20px;
+}
+.delete-ticket{
+  border: 1px solid black;
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+}
+.add-information-ticket{
+  border: 1px solid black;
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+}
+.cheked-ticket{
+  width:25px;
+  height:25px;
+  border:1px solid darkgray;
+  border-radius:50%;
+  outline:none;
+  margin-right: 20px;
+}
+.show-ticket{
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  height: 50%;
+  border-radius:20px;
+  border:1px solid darkgray;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+.title {
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.input.error {
-  border: 1px solid red;
-}
-
-.btn {
-  display: inline-block;
-  text-align: center;
-  vertical-align: middle;
-  user-select: none;
-  padding: .375rem .75rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  border-radius: .25rem;
-  border: 1px solid #ced4da;
-}
-
-.form-control {
-  position: relative;
-  margin-bottom: 5px;
+.btn-list-show{
+  display: flex;
 }
