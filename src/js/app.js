@@ -1,81 +1,100 @@
-// TODO: write code here
-const allForm = document.querySelector('.container-tickets');
-const ticketList = document.querySelector('.ticket-list');
-const ticketAddButton = document.querySelector('.add-tickets');
-const btnNoneShow = document.querySelector('.btn-none-show');
-const showTicket = document.querySelector('.show-ticket');
-const btnOkshow = document.querySelector('.btn-ok-show');
-const inputShotInformation = document.querySelector('.input-shot-information');
-const deleteTickets = document.querySelectorAll('.delete-ticket');
-const tickets = document.querySelectorAll('.ticket');
+import getTicket from "./functionGetTicket";
+import getRemoveTicketWidget from "./removeTicketWidget";
+import getAddTicketWidget from "./addTicketWidget";
+import getEditTicketWidget from "./editTicketWidget";
+import changeTicketStatus from "./functionChangeTicketStatus";
+import showTicketDescription from "./functionShowTicketDescription";
 
-const xhr = new XMLHttpRequest();
-const data = undefined;
-
-deleteTickets.forEach((el, index) => {
-  el.addEventListener('click', (e) => {
-    e.preventDefault();
-      tickets[index].remove();
-  });
-});
+const port = 7070;
+const serverUrl = `http://localhost:${port}`;// for devserver  work
 
 
-ticketAddButton.addEventListener('click', (evt) => {
-  evt.preventDefault();
-  ticketList.innerHTML = `
-  <form class="show-ticket">
-    <div class="title">Добваить тикет</div>
-    <label class="shot-information" for="input-shot-information">Краткое описание</label>
-    <input class="input-shot-information">
-    <label class="shot-information" for="input-all-information">Подробное описание</label>
-    <input class="input-all-information">
-    <button class="btn-none-show">Oтмена</button>
-    <button class="btn-ok-show">Ok</button>
-  </form>`;
-});
+const mainContainer = document.querySelector(".container");
+const ticketsContainer = document.querySelector(".tickets-container");
+const addTicketButton = document.querySelector(".add-ticket-button");
 
-btnNoneShow.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  ticketList.remove('showTicket');
-});
-
-
-const body = new FormData(showTicket);
-
-showTicket.addEventListener('submit', (e) => {
-  e.preventDefault();
-
-  
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState !== 4) return;
-    
-    console.log(xht.responseText);
-  }
-  
-  xhr.open('POST', 'http://localhost:7070');
-  
-  xhr.send(body);
-});
-
-xhr.addEventListener('load', () => {
-  if (xhr.status >= 200 && xhr.status < 300) {
+//  page onload request loading tickets from server
+document.addEventListener("DOMContentLoaded", () => {
+  // console.log('DOMContentLoaded');
+  const xhrLoadTickets = new XMLHttpRequest();
+  xhrLoadTickets.open("GET", `${serverUrl}/?method=allTickets`);
+  xhrLoadTickets.responseType = "json";
+  xhrLoadTickets.addEventListener("load", () => {
+    if (xhrLoadTickets.status >= 200 && xhrLoadTickets.status < 300) {
       try {
-          const data = JSON.parse(xhr.responseText);
+        // console.log('load from server is ok');
+        const responsedTickets = xhrLoadTickets.response;
+        // console.log('xhrLoadTickets.response: ', xhrLoadTickets.response);
+        if (!responsedTickets.length) return;
+        responsedTickets.forEach((ticket) => {
+          // console.log(ticket);
+          getTicket(ticket, ticketsContainer);
 
-          btnOkshow.addEventListener('submit', (evt) => {
-            evt.preventDefault();
-            ticketList.insertAdjacentHTML('beforeend', `     
-             <div class="ticket" id="${data.id}">
-                  <input type="checkbox" class="cheked-ticket">
-                  <div class="ticket-name">${data.name}</div>
-                  <div class="ticket-description">${data.description}</div>
-                  <div class="ticket-created">${data.created}</div>
-                  <button class="add-information-ticket">&#128393</button>
-                  <button class="delete-ticket">Х</button>
-                </div>`);
-          }); 
+          const currentTicket = ticketsContainer.lastElementChild;
+          const ticketStatus = currentTicket.querySelector(".ticket-status");
+          const ticketStatusCheckbox = ticketStatus.querySelector(
+            ".ticket-status-checkbox"
+          );
+          if (ticketStatus.dataset.status === "true")
+            ticketStatusCheckbox.classList.remove("hidden");
+          const ticketName = currentTicket.querySelector(".ticket-name");
+          const ticketEdit = currentTicket.querySelector(".ticket-edit-button");
+          const ticketRemove = currentTicket.querySelector(
+            ".ticket-remove-button"
+          );
+
+          //  CHANGE TICKET STATUS
+
+          ticketStatus.addEventListener("click", () => {
+            // console.log('ticketStatus.dataset.status: ', ticketStatus.dataset.status);
+            changeTicketStatus(
+              mainContainer,
+              currentTicket,
+              ticketStatus,
+              ticketStatusCheckbox,
+              serverUrl
+            );
+          });
+
+          //  SHOW DESCRIPTION
+
+          ticketName.addEventListener("click", () => {
+            showTicketDescription(
+              mainContainer,
+              currentTicket,
+              ticketName,
+              serverUrl
+            );
+          });
+
+          //  TICKET EDITING
+
+          ticketEdit.addEventListener("click", () => {
+            //  pop-up modal window
+            getEditTicketWidget(
+              mainContainer,
+              currentTicket,
+              ticketEdit,
+              serverUrl
+            );
+          });
+
+          //  TICKET REMOVING
+
+          ticketRemove.addEventListener("click", () => {
+            getRemoveTicketWidget(mainContainer, currentTicket, serverUrl);
+          });
+        }); // forEach endline
       } catch (e) {
-          console.error(e);
+        console.error(e);
+        // throw e;
       }
-  }
-});
+    }
+  }); // END OF TICKET LOADING
+  xhrLoadTickets.send();
+
+  //  ADD TICKET BUTTON LOGIC
+  addTicketButton.addEventListener("click", () => {
+    getAddTicketWidget(mainContainer, serverUrl);
+  });
+}); // DOMload endline
