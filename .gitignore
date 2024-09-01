@@ -1,5 +1,7 @@
 dist
 doc
+.vscode
+.idea
 
 # Logs
 logs
