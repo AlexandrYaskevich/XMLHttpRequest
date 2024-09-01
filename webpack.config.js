@@ -1,19 +1,11 @@
 const path = require('path');
-const webpack = require('webpack');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 module.exports = {
-  target: 'web',
-  devtool: 'inline-source-map',
   output: {
     path: path.resolve(__dirname, 'dist'),
-  },
-  devServer: {
-    historyApiFallback: true,
-    contentBase: path.resolve(__dirname, '/dist'),
-    open: true,
-    compress: true,
   },
   module: {
     rules: [
@@ -33,11 +25,27 @@ module.exports = {
         ],
       },
       {
-        test: /\.css$/,
+        test: /\.(png|jpe?g|gif)$/i,
         use: [
-          MiniCssExtractPlugin.loader, 'css-loader',
+          {
+            loader: 'file-loader',
+          },
         ],
       },
+      {
+        test: /\.css$/,
+        use: [
+            'style-loader',
+            'css-loader'
+        ]
+      },
+    ],
+  },
+  optimization: {
+    minimizer: [
+      // For webpack@5 you can use the `...` syntax to extend existing minimizers (i.e. `terser-webpack-plugin`), uncomment the next line
+      `...`,
+      new CssMinimizerPlugin(),
     ],
   },
   plugins: [
@@ -49,6 +57,8 @@ module.exports = {
       filename: '[name].css',
       chunkFilename: '[id].css',
     }),
-    new webpack.HotModuleReplacementPlugin(),
   ],
+  stats: {
+    children: true
+  }
 };
