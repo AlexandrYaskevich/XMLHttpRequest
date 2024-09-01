@@ -1,3 +1,4 @@
-test('test stub - don\'t do stuff like that - only for demo', () => {
 
+test('empty stub test', () => {
+    expect(1).toBe(1);
 });
